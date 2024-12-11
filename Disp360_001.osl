@@ -57,7 +57,8 @@ shader Disp360_001(
 
     float disp = getDepthSpherical(depthSample[0], BaselineLength, SphericalAngle);
     
-    vector newPosition = P + (N * clamp(disp, -Maximum, 0.0) * Displacement);
+    vector newNormal = vector(N[0], N[2], N[1]);
+    vector newPosition = P + (newNormal * clamp(disp, -Maximum, 0.0) * Displacement);
     //newPosition = vector(newPosition[1], newPosition[0], newPosition[2]);
     //newPosition[2] *= -1.0;
 
