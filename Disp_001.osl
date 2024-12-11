@@ -49,8 +49,9 @@ shader Disp_001(
     color rgbSample = texture(DepthMap, UV[0], UV[1] * 0.5);
 
     float depthValue = (depthSample[0] + depthSample[1] + depthSample[2]) / 3.0;
-    vector surfaceNormal = normalize(N);
-    vector disp = surfaceNormal * depthValue * Displacement;
+    //vector surfaceNormal = normalize(N);
+    //vector disp = surfaceNormal * depthValue * Displacement;
+    vector disp = N * depthValue * Displacement;
 
     DisplacedPosition = P + disp;
     Color = rgbSample;

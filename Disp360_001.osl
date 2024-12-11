@@ -56,11 +56,10 @@ shader Disp360_001(
     color rgbSample = texture(DepthMap, UV[0], UV[1] * 0.5);
 
     float disp = getDepthSpherical(depthSample[0], BaselineLength, SphericalAngle);
-    //vector surfaceNormal = normalize(N);
-    //vector disp = surfaceNormal * depthValue * Displacement;
     
-    vector newPosition = P + (N * clamp(disp, -Maximum, 0.0)) * Displacement;
-    newPosition[2] *= -1.0;
+    vector newPosition = P + (N * clamp(disp, -Maximum, 0.0) * Displacement);
+    //newPosition = vector(newPosition[1], newPosition[0], newPosition[2]);
+    //newPosition[2] *= -1.0;
 
     DisplacedPosition = newPosition; //P + disp;
     Color = rgbSample;
