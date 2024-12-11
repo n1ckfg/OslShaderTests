@@ -32,11 +32,18 @@ string intToString(int input)
     return result;
 }
 
+float getDepthSpherical(float depthSample, float baselineLength, float sphericalAngle) {
+    return asin(baselineLength * sin(sphericalAngle)) / asin(depthSample);
+}
+
 shader Disp360_001(
     string TexName = "",
     int FrameNum = 0,
     string TexExtension = "",
-    float Displacement = 1.0,
+    float Displacement = 10.0,
+    float Maximum = 99.0,
+    float BaselineLength = 0.5,
+    float SphericalAngle = 3.143,
     vector UV = 0.0,
     output vector DisplacedPosition = 0.0,
     output color Color = color(1.0, 0.0, 0.0)
@@ -48,11 +55,14 @@ shader Disp360_001(
     color depthSample = texture(DepthMap, UV[0], UV[1] * 0.5 + 0.5);
     color rgbSample = texture(DepthMap, UV[0], UV[1] * 0.5);
 
-    float depthValue = (depthSample[0] + depthSample[1] + depthSample[2]) / 3.0;
-    vector surfaceNormal = normalize(N);
-    vector disp = surfaceNormal * depthValue * Displacement;
+    float disp = getDepthSpherical(depthSample[0], BaselineLength, SphericalAngle);
+    //vector surfaceNormal = normalize(N);
+    //vector disp = surfaceNormal * depthValue * Displacement;
+    
+    vector newPosition = P + (N * clamp(disp, -Maximum, 0.0)) * Displacement;
+    newPosition[2] *= -1.0;
 
-    DisplacedPosition = P + disp;
+    DisplacedPosition = newPosition; //P + disp;
     Color = rgbSample;
 }
 
