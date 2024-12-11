@@ -1,0 +1,58 @@
+string intToString(int input)
+{
+    string result = "";
+    int num = abs(input);  
+    
+    if (num == 0) {
+        result = "0";
+    } else {
+        string digits[10] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        
+        string temp[32];  
+        int index = 0;
+        
+        while (num > 0) {
+            int digit = num % 10;
+            temp[index] = digits[digit];
+            num /= 10;
+            index++;
+        }
+        
+        if (input < 0) {
+            temp[index] = "-";
+            index++;
+        }
+        
+        result = "";
+        for (int i = index - 1; i >= 0; i--) {
+            result = concat(result, temp[i]);
+        }
+    }
+    
+    return result;
+}
+
+shader Disp360_001(
+    string TexName = "",
+    int FrameNum = 0,
+    string TexExtension = "",
+    float Displacement = 1.0,
+    vector UV = 0.0,
+    output vector DisplacedPosition = 0.0,
+    output color Color = color(1.0, 0.0, 0.0)
+)
+{   
+    string FrameStr = intToString(FrameNum);
+    string DepthMap = concat(TexName, FrameStr, ".", TexExtension);
+    
+    color depthSample = texture(DepthMap, UV[0], UV[1] * 0.5 + 0.5);
+    color rgbSample = texture(DepthMap, UV[0], UV[1] * 0.5);
+
+    float depthValue = (depthSample[0] + depthSample[1] + depthSample[2]) / 3.0;
+    vector surfaceNormal = normalize(N);
+    vector disp = surfaceNormal * depthValue * Displacement;
+
+    DisplacedPosition = P + disp;
+    Color = rgbSample;
+}
+
